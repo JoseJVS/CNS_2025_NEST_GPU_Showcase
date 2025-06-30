@@ -32,8 +32,6 @@ SIMULATION_PARAMS = {
     "seed": 12345,  # Seed for random number generation
     "pre_simtime": 100.0,  # Simulation time until reaching equilibrium in ms
     "simtime": 1000.0,  # Simulation time at equilibrium in ms
-    "output_path": "data",  # Path where all files will have to be written
-    "use_dc_input": False,  # Use DC input instead of Poisson generators
     "max_rec_spikes": 1000,  # Maximum number of spikes to record per neuron
     "verbosity": 20,  # Python logger verbosity
     "data_file": "simulation_data.json",  # Name of output file with simulation data
@@ -773,7 +771,7 @@ def main() -> None:
             "params": {
                 "simulation_params": SIMULATION_PARAMS,
                 "network_params": NETWORK_PARAMS,
-                "neuron_params": NETWORK_PARAMS,
+                "neuron_params": NEURON_PARAMS,
                 "synapse_params": SYNAPSE_PARAMS,
                 "stimulus_params": STIMULUS_PARAMS,
                 "plot_params": PLOT_PARAMS,
