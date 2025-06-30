@@ -92,7 +92,7 @@ PLOT_PARAMS = {
     "tick_font_size": 20,
     "marker_size": 1,
     "ax_y_label": "",  # MPI rank is prepended to this string
-    "ax_x_label": "Spike Times",
+    "ax_x_label": "Spike times [ms]",
     "ax_title": "Raster plots by MPI ranks",
     "ax_x_ticks": [
         SIMULATION_PARAMS["pre_simtime"],
