@@ -61,8 +61,8 @@ Libraries were used with Python 3.11.9
 
 
 ## Contact
-Luca Sergi, Department of Physics, University of Cagliary, Italy, Istituto Nazionale di Fisica Nucleare, Sezione di Cagliari, Italy, lsergi@dsf.unica.it
-José Villamar, Institute for Advanced Simulation (IAS-6), Jülich, Germany, j.villamar@fz-juelich.de
+* Luca Sergi, Department of Physics, University of Cagliary, Italy, Istituto Nazionale di Fisica Nucleare, Sezione di Cagliari, Italy, lsergi@dsf.unica.it
+* José Villamar, Institute for Advanced Simulation (IAS-6), Jülich, Germany, j.villamar@fz-juelich.de
 
 
 ## License
