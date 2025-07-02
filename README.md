@@ -1,5 +1,7 @@
 # CNS 2025 NEST GPU software showcase
 
+A Google Colab version of the interactive Jupyter notebook is available [here](https://colab.research.google.com/drive/1FNGmYn4dWMBskJBDY_2lE5yuaugIshl9?usp=sharing).
+
 ## Summary
 This is a short showcase for the NEST GPU software.
 A rough guideline of the presentation:
