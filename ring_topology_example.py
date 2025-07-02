@@ -16,9 +16,15 @@ LOG = logging.getLogger(__name__)
 # Used for downsampling neuron counts for plotting
 import random
 
+# Used to handle command line parameters
+from argparse import ArgumentParser
+
 # Used for storing spike data
 from json import dumps
 from pathlib import Path
+
+# For timing simulation sections
+from time import perf_counter_ns
 
 # Used for error handling
 from traceback import format_exc
@@ -27,14 +33,24 @@ import matplotlib.pyplot as plt
 import nestgpu as ngpu
 from mpi4py import MPI
 
+parser = ArgumentParser()
+parser.add_argument("--scale", type=int, default=1000)
+parser.add_argument("--seed", type=int, default=12345)
+parser.add_argument("--outpath", type=str, default=".")
+args = parser.parse_args()
+
+outpath = Path(args.outpath)
+outpath.mkdir(parents=True, exist_ok=True)
+
 SIMULATION_PARAMS = {
-    "scale": 1000,  # Order of magnitude of neuron population size
-    "seed": 12345,  # Seed for random number generation
+    "scale": args.scale,  # Order of magnitude of neuron population size
+    "seed": args.seed,  # Seed for random number generation
     "pre_simtime": 100.0,  # Simulation time until reaching equilibrium in ms
     "simtime": 1000.0,  # Simulation time at equilibrium in ms
     "max_rec_spikes": 1000,  # Maximum number of spikes to record per neuron
     "verbosity": 20,  # Python logger verbosity
     "data_file": "simulation_data.json",  # Name of output file with simulation data
+    "plot_spike_data": True,  # Control parameter to enable plotting
 }
 
 
@@ -483,10 +499,6 @@ def connect_nodes(mpi_id: int, mpi_np: int, nodes_tuple: tuple) -> None:
     rank_log(mpi_id, LOG.info, "Connecting local Poisson generator")
     ngpu.Connect(local_stimulus, local_neurons, pg_conn_dict, pg_syn_dict)
 
-    # Explicit call to calibrate to finalize network construction
-    rank_log(mpi_id, LOG.info, "Calibrating")
-    ngpu.Calibrate()
-
 
 def gather_spike_times(mpi_id: int, local_node_sequence: ngpu.NodeSeq) -> dict:
     """
@@ -701,19 +713,20 @@ def plot_spike_data(mpi_id: int, mpi_spike_data: list) -> None:
 
         if PLOT_PARAMS["plot_individual"]:
             plot_file = (
-                Path()
+                outpath
                 / f"{PLOT_PARAMS['file_name']}_rank_{rank_data['rank']}.{PLOT_PARAMS['file_format']}"
             )
             fig.tight_layout()
             fig.savefig(plot_file)
 
     if not PLOT_PARAMS["plot_individual"]:
-        plot_file = Path() / f"{PLOT_PARAMS['file_name']}.{PLOT_PARAMS['file_format']}"
+        plot_file = outpath / f"{PLOT_PARAMS['file_name']}.{PLOT_PARAMS['file_format']}"
         fig.tight_layout()
         fig.savefig(plot_file)
 
 
 def main() -> None:
+    time = perf_counter_ns()
     # Get local rank ID and total number of ranks
     mpi_id = ngpu.HostId()
     mpi_np = ngpu.HostNum()
@@ -728,17 +741,43 @@ def main() -> None:
             "rnd_seed": SIMULATION_PARAMS["seed"],
         }
     )
+    time_init = (perf_counter_ns() - time) / 1e9
+    rank_log(mpi_id, LOG.info, "Initialization time %f", time_init)
+    del time
 
     # Construct network
     # Tuple is composed of
     #   - mpi_node_sequence (item 0)
     #   - local_stimulus_node (item 1)
+    time = perf_counter_ns()
     nodes_tuple = create_nodes(mpi_id, mpi_np)
+    time_create = (perf_counter_ns() - time) / 1e9
+    rank_log(mpi_id, LOG.info, "Creation time %f", time_create)
+    del time
+
+    time = perf_counter_ns()
     connect_nodes(mpi_id, mpi_np, nodes_tuple)
+    time_connect = (perf_counter_ns() - time) / 1e9
+    rank_log(mpi_id, LOG.info, "Connection time %f", time_connect)
+    del time
+
+    # Explicit call to calibrate to finalize network construction
+    time = perf_counter_ns()
+    rank_log(mpi_id, LOG.info, "Calibrating")
+    ngpu.Calibrate()
+    time_calibrate = (perf_counter_ns() - time) / 1e9
+    rank_log(mpi_id, LOG.info, "Calibration time %f", time_calibrate)
+    del time
 
     # Simulate
+    time = perf_counter_ns()
     rank_log(mpi_id, LOG.info, "Running pre-simulation")
     ngpu.Simulate(SIMULATION_PARAMS["pre_simtime"])
+    time_presim = (perf_counter_ns() - time) / 1e9
+    rank_log(mpi_id, LOG.info, "Pre-simulation time %f", time_presim)
+    del time
+
+    time = perf_counter_ns()
     if do_window_stimulus:
         rank_log(
             mpi_id, LOG.info, "Running simulation before additional stimulus window"
@@ -757,14 +796,38 @@ def main() -> None:
     else:
         rank_log(mpi_id, LOG.info, "Running simulation")
         ngpu.Simulate(SIMULATION_PARAMS["simtime"])
+    time_sim = (perf_counter_ns() - time) / 1e9
+    rank_log(mpi_id, LOG.info, "Simulation time %f", time_sim)
+    del time
 
     # Every rank has its own spike data
+    time = perf_counter_ns()
     mpi_spike_data = gather_spike_times(mpi_id, nodes_tuple[0][mpi_id])
+    time_gather = (perf_counter_ns() - time) / 1e9
+    rank_log(mpi_id, LOG.info, "Gather spikes time %f", time_gather)
+    del time
+
     # Here we gather all data from MPI ranks at rank 0
     rank_log(mpi_id, LOG.info, "Gathering spike data at rank 0")
     mpi_spike_data = MPI.COMM_WORLD.gather(mpi_spike_data, root=0)
     # Now only MPI rank 0 posses the spike data
     # For other ranks the variable mpi_spike_data points to None
+
+    # Here we collect all timers measured in the current MPI process
+    mpi_times = {
+        "rank": mpi_id,
+        "time_init": time_init,
+        "time_create": time_create,
+        "time_connect": time_connect,
+        "time_calibrate": time_calibrate,
+        "time_presim": time_presim,
+        "time_sim": time_sim,
+        "time_gather": time_gather,
+    }
+
+    # Like for spike data, we gather everything at rank 0
+    rank_log(mpi_id, LOG.info, "Gathering timer data at rank 0")
+    mpi_times = MPI.COMM_WORLD.gather(mpi_times, root=0)
 
     # This section is only done by MPI rank 0
     # other MPI processes will now exit and free resources
@@ -780,6 +843,7 @@ def main() -> None:
                 "stimulus_params": STIMULUS_PARAMS,
                 "plot_params": PLOT_PARAMS,
             },
+            "mpi_times": mpi_times,
             "mpi_spike_data": mpi_spike_data,
         }
         rank_log(
@@ -788,8 +852,9 @@ def main() -> None:
             "Storing simulation data to %s",
             SIMULATION_PARAMS["data_file"],
         )
-        Path(SIMULATION_PARAMS["data_file"]).write_text(dumps(output_data))
-        plot_spike_data(mpi_id, mpi_spike_data)
+        (outpath / SIMULATION_PARAMS["data_file"]).write_text(dumps(output_data))
+        if SIMULATION_PARAMS["plot_spike_data"]:
+            plot_spike_data(mpi_id, mpi_spike_data)
 
 
 if __name__ == "__main__":
