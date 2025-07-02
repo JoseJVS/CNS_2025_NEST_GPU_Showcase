@@ -275,9 +275,11 @@ def create_nodes(mpi_id: int, mpi_np: int) -> tuple:
         mpi_node_sequences[mpi_id], SIMULATION_PARAMS["max_rec_spikes"]
     )
 
-    # In practice there is no difference from creating a single
-    # Poisson generator or one per MPI rank, to avoid communication
-    # overhead each generator is only created and connected locally.
+    # In practice there is no mathematical difference
+    # from creating a single Poisson generator or one per MPI rank
+    # (an independent random number stream is created for each connection),
+    # however to avoid the MPI communication overhead needed for remote connections,
+    # each generator is created and connected locally.
     rank_log(mpi_id, LOG.info, "Creating Poisson generator")
     local_stimulus = ngpu.Create(
         "poisson_generator",
@@ -624,8 +626,10 @@ def plot_spike_data(mpi_id: int, mpi_spike_data: list) -> None:
                     2 * PLOT_PARAMS["fig_y_margin"] * PLOT_PARAMS["ax_height"],
                 )
             )
-        else:
+        elif num_ranks > 1:
             ax = axs[rd_index]
+        else:
+            ax = axs
 
         exc_spike_times = rank_data["spike_times"]["E"]
         inh_spike_times = rank_data["spike_times"]["I"]
