@@ -50,6 +50,17 @@ A rough guideline of the presentation:
 * [ring_topology_example.py](ring_topology_example.py): Python script for part 3
 * [ring_topology_activity.png](ring_topology_activity.png): Output activity of simulation of part 3
 * [simulation_data.json](simulation_data.json): Simulation output of part 3
+* [timer_data.json](timer_data.json): Ring network benchmarking data performed in LEONARDO Booster
+* [plot_timer_data.py](plot_timer_data.py): Python script to create benchmarking data plots
+* [leonardo_ring_benchmark_net_con.png](leonardo_ring_benchmark_net_con.png): Network construction performance of ring network benchmark
+* [leonardo_ring_benchmark_rft.png](leonardo_ring_benchmark_rtf.png): Real-Time factor of ring network benchmark
+* [leonardo_ring_benchmark_time_init.png](leonardo_ring_benchmark_time_init.png): Initialization time performance of ring network benchmark
+* [leonardo_ring_benchmark_time_create.png](leonardo_ring_benchmark_time_create.png): Node creation time performance of ring network benchmark
+* [leonardo_ring_benchmark_time_connect.png](leonardo_ring_benchmark_time_connect.png): Node connection time performance of ring network benchmark
+* [leonardo_ring_benchmark_time_calibrate.png](leonardo_ring_benchmark_time_calibrate.png): Calibration time performance of ring network benchmark
+* [leonardo_ring_benchmark_time_presim.png](leonardo_ring_benchmark_time_presim.png): Pre-simulation time performance of ring network benchmark
+* [leonardo_ring_benchmark_time_sim.png](leonardo_ring_benchmark_time_sim.png): Simulation time performance of ring network benchmark
+* [leonardo_ring_benchmark_time_gather.png](leonardo_ring_benchmark_time_gather.png): Data gathering time performance of ring network benchmark
 
 
 ## Software requirements
