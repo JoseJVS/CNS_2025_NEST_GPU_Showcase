@@ -42,7 +42,7 @@ parser.add_argument("--verbosity", type=int, default=20)
 args = parser.parse_args()
 
 PLOT_PARAMS = {
-    "ax_width": 10,
+    "ax_width": 6,
     "ax_height": 2,
     "fig_y_margin": 1,
     "fig_x_margin": 1,
@@ -200,4 +200,4 @@ if __name__ == "__main__":
             f"leonardo_ring_benchmark_{timer}.{PLOT_PARAMS['file_format']}"
         )
         fig.tight_layout()
-        fig.savefig(plot_file)
+        fig.savefig(plot_file, dpi=300)
