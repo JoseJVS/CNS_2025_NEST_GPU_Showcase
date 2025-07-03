@@ -44,6 +44,7 @@ A rough guideline of the presentation:
 
 ## Files included here
 * [CNS_2025_NEST_GPU_Showcase.pdf](CNS_2025_NEST_GPU_Showcase.pdf): Showcase slides
+* [qr_code.png](qr_code.png): QR Code pointing to showcase material upload in Zenodo
 * [brunel_network.png](brunel_network.png): Network sketch for Brunel network
 * [nest_gpu_CNS_showcase.ipynb](nest_gpu_CNS_showcase.ipynb): Jupyter notebook for parts 1 & 2
   * A Google Colab version of the interactive Jupyter notebook is available [here](https://colab.research.google.com/drive/1FNGmYn4dWMBskJBDY_2lE5yuaugIshl9?usp=sharing)
