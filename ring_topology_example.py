@@ -56,7 +56,7 @@ from mpi4py import MPI
 parser = ArgumentParser()
 parser.add_argument("--scale", type=int, default=1000)
 parser.add_argument("--seed", type=int, default=12345)
-parser.add_argument("--outpath", type=str, default=".")
+parser.add_argument("--outpath", type=str, default="data")
 args = parser.parse_args()
 
 outpath = Path(args.outpath)
