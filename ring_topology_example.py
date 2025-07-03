@@ -4,6 +4,26 @@
 
 NEST GPU ring topology network.
 
+This network script is designed
+to create and connect multiple instances
+of the Brunel network in a ring topology.
+Each instance in the ring receives connections from
+one neighbor and send connections to the other.
+
+One instance is created per MPI process used.
+If only one MPI process is used then a normal
+Brunel network is instantiated.
+
+Additionally, a stimulus experiment is setup
+so that, during simulation, one of the instances
+receives less input its the Poisson generator
+for a window of time.
+
+Spiking data from both excitatory and inhibitory
+populations is recorded, plotted in a raster plot,
+and stored in a JSON data file along with simulation
+metadata.
+
 Authors: Jose V.
 
 """
