@@ -36,7 +36,7 @@ import pandas as pd
 import seaborn as sns
 
 parser = ArgumentParser()
-parser.add_argument("--data", type=str, default="timer_data.json")
+parser.add_argument("--data", type=str, default="data/timer_data.json")
 parser.add_argument("--simtime", type=float, default=1.0)
 parser.add_argument("--verbosity", type=int, default=20)
 args = parser.parse_args()
