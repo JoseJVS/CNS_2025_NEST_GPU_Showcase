@@ -5,7 +5,7 @@ In this showcase, we will demonstrate the capabilities of the GPU simulator and 
 For this, we will focus on three aspects of the simulation across model scales, namely network construction speed, state propagation speed, and energy efficiency.
 Furthermore, we will present our efforts to statistically validate our simulation results against those of NEST (CPU) using established network models.
 You can follow our progress through our [GitHub](https://github.com/nest/nest-gpu) page.
-Materials for this showcase can be found in [Zenodo](https://doi.org/10.5281/zenodo.15754814)
+Materials for this showcase can be found in [Zenodo](https://doi.org/10.5281/zenodo.15754814).
 
 1. Golosio et al. Front. Comput. Neurosci. 15:627620, 2021.
 2. Tiddia et al. Front. Neuroinform. 16:883333, 2022.
